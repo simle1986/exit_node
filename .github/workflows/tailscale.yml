@@ -1,4 +1,4 @@
-name: Exit Node
+name: exit node
 on:
   workflow_dispatch:
 
