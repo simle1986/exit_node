@@ -1,0 +1,33 @@
+name: Linux Tailscale Exit Node
+on:
+  workflow_dispatch:
+
+jobs:
+  tailscale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3600
+
+    steps:
+      - name: Install Tailscale
+        run: |
+          curl -fsSL https://tailscale.com/install.sh | sh
+
+      - name: Enable IP forwarding
+        run: |
+          sudo sysctl -w net.ipv4.ip_forward=1
+          sudo sysctl -w net.ipv6.conf.all.forwarding=1
+
+      - name: Start Tailscale unattended
+        run: |
+          sudo tailscale up \
+            --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} \
+            --hostname=gh-linux-node \
+            --advertise-exit-node \
+            --unattended \
+            --reset
+
+          TS_IP=$(sudo tailscale ip -4)
+          echo "✅ 节点上线成功：$TS_IP"
+
+      - name: Keep alive
+        run: sleep infinity
