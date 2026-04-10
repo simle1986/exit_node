@@ -1,4 +1,4 @@
-name: Linux Tailscale Exit Node
+name: Exit Node
 on:
   workflow_dispatch:
 
@@ -8,26 +8,27 @@ jobs:
     timeout-minutes: 3600
 
     steps:
-      - name: Install Tailscale
+      - name: 安装 Tailscale
         run: |
           curl -fsSL https://tailscale.com/install.sh | sh
 
-      - name: Enable IP forwarding
+      - name: 开启 IP 转发
         run: |
           sudo sysctl -w net.ipv4.ip_forward=1
           sudo sysctl -w net.ipv6.conf.all.forwarding=1
 
-      - name: Start Tailscale unattended
+      - name: 启动 Tailscale 免登录
         run: |
           sudo tailscale up \
             --authkey=${{ secrets.TAILSCALE_AUTH_KEY }} \
             --hostname=gh-linux-node \
             --advertise-exit-node \
-            --unattended \
+            --accept-routes \
             --reset
 
           TS_IP=$(sudo tailscale ip -4)
           echo "✅ 节点上线成功：$TS_IP"
+          echo "✅ 出口节点已开启"
 
-      - name: Keep alive
+      - name: 保持运行
         run: sleep infinity
