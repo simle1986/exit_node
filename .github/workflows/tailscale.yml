@@ -4,7 +4,7 @@ on:
 
 jobs:
   tailscale:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 3600
 
     steps:
@@ -31,4 +31,5 @@ jobs:
           echo "✅ 出口节点已开启"
 
       - name: 保持运行
-        run: sleep infinity
+        run: |
+          while true; do sleep 86400; done
